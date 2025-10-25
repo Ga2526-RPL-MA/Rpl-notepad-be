@@ -11,9 +11,20 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.18.0",
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
   },
   "devDependencies": {
     "prisma": "^6.18.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ga2526-RPL-MA/Rpl-notepad-be.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ga2526-RPL-MA/Rpl-notepad-be/issues"
+  },
+  "homepage": "https://github.com/Ga2526-RPL-MA/Rpl-notepad-be#readme"
 }
