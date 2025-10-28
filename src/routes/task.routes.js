@@ -6,7 +6,6 @@ router.post('/', async (req, res) => {
     try {
         const { title, description, dueDate, userId, classId } = req.body;
 
-
         if (!title || !userId || !classId)
             return res.status(400).json({ error: 'Judul dan mahasiswaId wajib diisi' });
 
