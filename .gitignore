@@ -8,5 +8,5 @@ node_modules
 
 *.db
 *.sqlite
-src/routes/routesTaskUser.js
+
 src/routes/routesUser.js
