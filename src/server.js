@@ -4,11 +4,6 @@ const app = express();
 
 app.use(express.json());
 
-const taskRoutes = require('./routes/task.routes.js');
-app.use('/tasks', taskRoutes);
-
-app.use(express.json());
-
 const registerRouter = require('./auth/register');
 app.use('/register', registerRouter);
 
@@ -23,6 +18,9 @@ app.use('/logout', logoutRouter);
 
 const classRouter = require('./routes/class.routes');
 app.use('/class', classRouter);
+
+const taskRoutes = require('./routes/task.routes.js');
+app.use('/tasks', taskRoutes);
 
 const testRouter = require('./routes/test.routes');
 app.use('/test', testRouter);
