@@ -1,7 +1,7 @@
-const express = require('express');
+const app = require('./index');
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server berjalan di http://localhost:${PORT}`);
 });
