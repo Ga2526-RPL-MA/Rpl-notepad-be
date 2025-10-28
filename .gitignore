@@ -9,4 +9,3 @@ node_modules
 *.db
 *.sqlite
 
-src/routes/routesUser.js
