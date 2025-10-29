@@ -1,82 +1,89 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../middleware/prismaClient');
-
-router.post('/', async (req, res) => {
-    try {
-        const { title, description, dueDate, userId, classId } = req.body;
-
-        if (!title || !userId || !classId)
-            return res.status(400).json({ error: 'Judul dan mahasiswaId wajib diisi' });
-
-        const tugas = await prisma.task.create({
-            data: {
-                title,
-                description,
-                dueDate: dueDate ? new Date(dueDate) : null,
-                userId,
-                classId,
-            },
-        });
-
-        res.status(201).json(tugas);
-    }
-    catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
+const { route } = require('./class.routes');
 
 router.get('/', async (req, res) => {
     try {
-        const tasks = await prisma.task.findMany();
+        const tasks = await prisma.task.findMany({
+            where: { id: req.user.id }
+        });
         res.json(tasks);
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: 'Error fetching task data' });
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const { id } = req.params;
-        const task = await prisma.task.findUnique({
-            where: { id: parseInt(id) },
-            include: { user: true },
-        });
-        if (!task) {
-            return res.status(404).json({ message: "Task tidak ditemukan" });
+        const { title, description, dueDate, classId } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ error: 'Title is required' });
         }
-        res.json(task);
+
+        if (!dueDate) {
+            return res.status(400).json({ error: 'Due date is required' });
+        }
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        if (!classId) {
+            return res.status(400).json({ error: 'Class ID is required' });
+        }
+
+        const newTask = await prisma.task.create({
+            data: {
+                title,
+                description,
+                dueDate: new Date(dueDate),
+                userId: req.user.id,
+                classId
+            }
+        });
+        res.status(201).json(newTask);
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: 'Error creating task' });
     }
 });
 
 router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, description, dueDate, status, classId } = req.body;
+
     try {
-        const { id } = req.params;
-        const { title, description, dueDate } = req.body;
         const updatedTask = await prisma.task.update({
             where: { id: parseInt(id) },
-            data: { title, description, dueDate: dueDate ? new Date(dueDate) : undefined },
+            data: {
+                title,
+                description,
+                dueDate: new Date(dueDate),
+                status,
+                classId
+            }
         });
-        res.json({ message: "Task Telah diupdate", task: updatedTask });
+        res.json(updatedTask);
     }
     catch (error) {
-        res.status(400).json({ error: 'Gagal memperbarui task' });
+        res.status(500).json({ error: 'Error updating task' });
     }
 });
 
 router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const { id } = req.params;
-        await prisma.task.delete({ where: { id: parseInt(id) } });
-        res.json({ message: "Task Berhasil dihapus" });
+        await prisma.task.delete({
+            where: { id: parseInt(id) }
+        });
+        res.status(204).end();
     }
     catch (error) {
-        res.status(400).json({ error: 'Gagal menghapus task' });
+        res.status(500).json({ error: 'Error deleting task' });
     }
 });
 

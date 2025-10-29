@@ -19,7 +19,7 @@ app.use('/logout', logoutRouter);
 const classRouter = require('./routes/class.routes');
 app.use('/class', classRouter);
 
-const taskRoutes = require('./routes/task.routes.js');
+const taskRoutes = require('./routes/task.routes');
 app.use('/tasks', taskRoutes);
 
 const testRouter = require('./routes/test.routes');
