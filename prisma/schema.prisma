@@ -11,7 +11,7 @@ datasource db {
 model User {
   id          Int        @id @default(autoincrement())
   name        String
-  nrp         String        @unique
+  nrp         String     @unique
   email       String
   password    String
   role        String     @default("user")
@@ -51,8 +51,9 @@ model UserClasses {
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
+  description String?
   dueDate     DateTime
+  status      String   @default("ongoingz")
   userId      Int
   classId     Int
   user        User     @relation(fields: [userId], references: [id])
