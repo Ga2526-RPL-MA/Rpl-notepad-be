@@ -1,13 +1,13 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-const port = 3000;
+const port = 5000;
 const app = express();
 
 app.use(helmet());
 
 const corsConfig = {
-  origin: ['https://localhost:'],
+  origin: ['https://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credetials: true
 };
