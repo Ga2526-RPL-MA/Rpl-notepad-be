@@ -5,54 +5,58 @@ const authenticateToken = require('../middleware/authMiddleware');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
-        const classes = await prisma.class.findMany();
-        res.json(classes);
+        const answers = await prisma.answer.findMany();
+        res.json(answers);
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error fetching class data' });
+        res.status(500).json({ error: 'Error fetching answers data' });
     }
 });
 
 router.post('/', authenticateToken, async (req, res) => {
-    const { name, lecturer, timetable, room } = req.body;
-
     try {
-        const newClass = await prisma.class.create({
+        const { content, issueId } = req.body;
+
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+
+        if (!issueId) {
+            return res.status(400).json({ error: 'Issue ID is required' });
+        }
+
+        const newAnswer = await prisma.answer.create({
             data: {
-                name,
-                lecturer,
-                timetable: new Date(timetable),
-                room
+                content,
+                userName: req.user.name,
+                issueId
             }
         });
-        res.status(201).json(newClass);
+        res.status(201).json(newAnswer);
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error creating class' });
+        res.status(500).json({ error: 'Error posting answers' });
     }
 });
 
 router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
-    const { name, lecturer, timetable, room } = req.body;
+    const { content } = req.body;
 
     try {
-        const updatedClass = await prisma.class.update({
+        const updatedAnswer = await prisma.answer.update({
             where: { id: parseInt(id) },
             data: {
-                name,
-                lecturer,
-                timetable: new Date(timetable),
-                room
+                content
             }
         });
-        res.json(updatedClass);
+        res.json(updatedAnswer);
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error updating class' });
+        res.status(500).json({ error: 'Error updating answer' });
     }
 });
 
@@ -60,14 +64,14 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        await prisma.class.delete({
+        await prisma.answer.delete({
             where: { id: parseInt(id) }
         });
         res.status(204).end();
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Error deleting class' });
+        res.status(500).json({ error: 'Error deleting answer' });
     }
 });
 
