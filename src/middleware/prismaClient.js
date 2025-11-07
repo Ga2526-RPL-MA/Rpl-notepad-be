@@ -1,9 +1,9 @@
-const { PrismaBetterSQLite3 } = require('@prisma/adapter-better-sqlite3');
-const { PrismaClient } = require('../../generated/prisma');
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@prisma/client'
 
-const adapter = new PrismaBetterSQLite3({
-  url: process.env.DATABASE_PRISMA_URL
-});
+const connectionString = `${process.env.DATABASE_URL}`
+
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 module.exports = prisma;
