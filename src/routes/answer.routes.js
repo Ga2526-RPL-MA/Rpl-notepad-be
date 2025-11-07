@@ -3,7 +3,7 @@ const router = express.Router();
 const prisma = require('../middleware/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware');
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const answers = await prisma.answer.findMany();
         res.json(answers);
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const { content, issueId } = req.body;
 
@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
 
@@ -60,7 +60,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {

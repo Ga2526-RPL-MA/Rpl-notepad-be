@@ -3,7 +3,7 @@ const router = express.Router();
 const prisma = require('../middleware/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware')
 
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const tasks = await prisma.task.findMany({
             where: { id: req.user.id }
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const { title, description, dueDate, classId } = req.body;
 
@@ -53,7 +53,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { title, description, dueDate, status, classId } = req.body;
 
@@ -76,7 +76,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
