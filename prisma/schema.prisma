@@ -37,6 +37,7 @@ model Class {
   room        String
   students    UserClasses[]
   tasks       Task[]
+  issue       Issue[]
 }
 
 model UserClasses {
@@ -53,9 +54,38 @@ model Task {
   title       String
   description String?
   dueDate     DateTime
-  status      String   @default("ongoingz")
+  status      String   @default("ongoing")
   userId      Int
   classId     Int
   user        User     @relation(fields: [userId], references: [id])
   class       Class    @relation(fields: [classId], references: [id])
+}
+
+model Issue {
+  id          Int      @id @default(autoincrement())
+  userName    String
+  content     String
+  reportedAt  DateTime @default(now())
+  classId     Int
+  class       Class    @relation(fields: [classId], references: [id])
+  answers     Answer[]
+}
+
+model Answer {
+  id          Int      @id @default(autoincrement())
+  userName    String
+  content     String
+  answeredAt  DateTime @default(now())
+  issueId     Int
+  subAnswers  SubAnswer[]
+  issue       Issue    @relation(fields: [issueId], references: [id])
+}
+
+model SubAnswer {
+  id          Int      @id @default(autoincrement())
+  userName    String
+  content     String
+  answeredAt  DateTime @default(now())
+  answerId    Int
+  answer      Answer   @relation(fields: [answerId], references: [id])
 }

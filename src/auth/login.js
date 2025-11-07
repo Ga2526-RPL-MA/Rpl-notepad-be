@@ -37,6 +37,7 @@ router.post('/', emailValidator, validate, async (req, res) => {
         res.status(200).json({
             message: 'Login successful',
             nrp: findUser.nrp,
+            role: findUser.role,
             accessToken: accessToken,
             refreshToken: refreshToken
         });
