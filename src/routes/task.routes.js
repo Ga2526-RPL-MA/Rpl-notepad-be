@@ -11,7 +11,7 @@ router.get('/', authenticateToken, async (req, res) => {
         res.json(tasks);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error fetching task data' });
     }
 });
@@ -48,7 +48,7 @@ router.post('/', authenticateToken, async (req, res) => {
         res.status(201).json(newTask);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error creating task' });
     }
 });
@@ -71,7 +71,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         res.json(updatedTask);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error updating task' });
     }
 });
@@ -86,7 +86,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(204).end();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error deleting task' });
     }
 });

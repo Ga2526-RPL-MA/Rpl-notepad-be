@@ -9,7 +9,7 @@ router.get('/', authenticateToken, async (req, res) => {
         res.json(subAnswer);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error fetching sub answers data' });
     }
 });
@@ -36,7 +36,7 @@ router.post('/', authenticateToken, async (req, res) => {
         res.status(201).json(newSubAnswer);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error posting sub answers' });
     }
 });
@@ -55,7 +55,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         res.json(updatedSubAnswer);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error updating sub answer' });
     }
 });
@@ -70,7 +70,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(204).end();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error deleting sub answer' });
     }
 });

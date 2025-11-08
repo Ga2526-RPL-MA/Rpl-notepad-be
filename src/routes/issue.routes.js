@@ -9,7 +9,7 @@ router.get('/', authenticateToken, async (req, res) => {
         res.json(issue);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error fetching issues data' });
     }
 });
@@ -44,7 +44,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         res.json(issue);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error fetching issues data' });
     }
 });
@@ -71,7 +71,7 @@ router.post('/', authenticateToken, async (req, res) => {
         res.status(201).json(newIssue);
     } 
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error creating issue' });
     }
 });
@@ -90,7 +90,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         res.json(updatedIssue);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error updating issue' });
     }
 });
@@ -105,7 +105,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(204).end();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error deleting issue' });
     }
 });

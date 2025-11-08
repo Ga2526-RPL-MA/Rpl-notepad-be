@@ -9,7 +9,7 @@ router.get('/', authenticateToken, async (req, res) => {
         res.json(classes);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error fetching class data' });
     }
 });
@@ -29,7 +29,7 @@ router.post('/', authenticateToken, async (req, res) => {
         res.status(201).json(newClass);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error creating class' });
     }
 });
@@ -51,7 +51,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
         res.json(updatedClass);
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error updating class' });
     }
 });
@@ -66,7 +66,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         res.status(204).end();
     }
     catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ error: 'Error deleting class' });
     }
 });
