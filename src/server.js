@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Rpl Notepad Backend is running');
+});
+
 const registerRouter = require('./auth/register');
 app.use('/register', registerRouter);
 
