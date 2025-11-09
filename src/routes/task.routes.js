@@ -17,8 +17,15 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 router.post('/', authenticateToken, async (req, res) => {
+    const { title, description, dueDate, classId } = req.body;
+
     try {
-        const { title, description, dueDate, classId } = req.body;
+        const findClass = await prisma.class.findUnique({
+            where: { id: classId }
+        });
+        if (!findClass) {
+            return res.status(404).json({ error: 'Class not found' });
+        }
 
         if (!title) {
             return res.status(400).json({ error: 'Title is required' });
