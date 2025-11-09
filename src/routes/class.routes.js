@@ -22,7 +22,7 @@ router.post('/', authenticateToken, async (req, res) => {
             data: {
                 name,
                 lecturer,
-                timetable: new Date(timetable),
+                timetable,
                 room
             }
         });
@@ -44,7 +44,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
             data: {
                 name,
                 lecturer,
-                timetable: new Date(timetable),
+                timetable,
                 room
             }
         });
