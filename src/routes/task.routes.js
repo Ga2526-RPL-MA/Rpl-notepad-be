@@ -6,7 +6,7 @@ const authenticateToken = require('../middleware/authMiddleware')
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const tasks = await prisma.task.findMany({
-            where: { id: req.user.id }
+            where: { userId: req.user.id }
         });
         res.json(tasks);
     }
@@ -24,14 +24,6 @@ router.post('/', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Title is required' });
         }
 
-        if (!dueDate) {
-            return res.status(400).json({ error: 'Due date is required' });
-        }
-
-        if (!userId) {
-            return res.status(400).json({ error: 'User ID is required' });
-        }
-
         if (!classId) {
             return res.status(400).json({ error: 'Class ID is required' });
         }
@@ -40,7 +32,7 @@ router.post('/', authenticateToken, async (req, res) => {
             data: {
                 title,
                 description,
-                dueDate: new Date(dueDate),
+                dueDate: dueDate ? new Date(dueDate) : null,
                 userId: req.user.id,
                 classId
             }
@@ -58,15 +50,24 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { title, description, dueDate, status, classId } = req.body;
 
     try {
+        const data = {
+            title,
+            description,
+            status,
+            classId
+        };
+
+        if (req.body.hasOwnProperty('dueDate')) {
+            if (dueDate) {
+                data.dueDate = new Date(dueDate);
+            } else {
+                data.dueDate = null;
+            }
+        };
+
         const updatedTask = await prisma.task.update({
             where: { id: parseInt(id) },
-            data: {
-                title,
-                description,
-                dueDate: new Date(dueDate),
-                status,
-                classId
-            }
+            data
         });
         res.json(updatedTask);
     }
