@@ -33,7 +33,7 @@ model Class {
   id        Int           @id @default(autoincrement())
   name      String
   lecturer  String
-  timetable DateTime
+  timetable String
   room      String
   issue     Issue[]
   tasks     Task[]
@@ -54,7 +54,7 @@ model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  dueDate     DateTime
+  dueDate     DateTime?
   status      String   @default("ongoing")
   userId      Int
   classId     Int

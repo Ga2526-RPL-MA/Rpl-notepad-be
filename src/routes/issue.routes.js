@@ -21,6 +21,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
         const issue = await prisma.issue.findUnique({
             where: { id: parseInt(id) },
             select: { //Issue Table
+                class: { //Class Table
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 id: true,
                 userName: true,
                 content: true,
@@ -32,10 +38,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
                         content: true,
                         answeredAt: true,
                         subAnswers: { //Sub-Answers Table
-                            id: true,
-                            userName: true,
-                            content: true,
-                            answeredAt: true,
+                            select: {
+                                id: true,
+                                userName: true,
+                                content: true,
+                                answeredAt: true,
+                            }
                         }
                     }
                 }
@@ -50,8 +58,15 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 router.post('/', authenticateToken, async (req, res) => {
+    const { content, classId } = req.body;
+
     try {
-        const { content, classId } = req.body;
+        const findClass = await prisma.class.findUnique({
+            where: { id: classId }
+        });
+        if (!findClass) {
+            return res.status(404).json({ error: 'Class not found' });
+        }
 
         if (!content) {
             return res.status(400).json({ error: 'Content is required' });
@@ -69,7 +84,7 @@ router.post('/', authenticateToken, async (req, res) => {
             }
         });
         res.status(201).json(newIssue);
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error creating issue' });

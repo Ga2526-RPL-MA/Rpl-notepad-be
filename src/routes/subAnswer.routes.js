@@ -15,8 +15,15 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 router.post('/', authenticateToken, async (req, res) => {
+    const { content, answerId } = req.body;
+
     try {
-        const { content, answerId } = req.body;
+        const findAnswer = await prisma.answer.findUnique({
+            where: { id: answerId }
+        });
+        if (!findAnswer) {
+            return res.status(404).json({ error: 'Answer not found' });
+        }
 
         if (!content) {
             return res.status(400).json({ error: 'Content is required' });
