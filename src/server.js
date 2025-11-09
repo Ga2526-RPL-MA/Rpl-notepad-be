@@ -1,8 +1,26 @@
 const express = require('express');
-const port = 3000;
+const helmet = require('helmet');
+const cors = require('cors');
+const port = 5000;
 const app = express();
 
+app.use(helmet());
+
+const corsConfig = {
+  origin: ['https://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credetials: true
+};
+
+app.use(cors(corsConfig));
+
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.send('Rpl Notepad Backend is running');
+});
 
 const registerRouter = require('./auth/register');
 app.use('/register', registerRouter);
@@ -21,6 +39,15 @@ app.use('/class', classRouter);
 
 const taskRoutes = require('./routes/task.routes');
 app.use('/tasks', taskRoutes);
+
+const issueRoutes = require('./routes/issue.routes');
+app.use('/issues', issueRoutes);
+
+const answerRoutes = require('./routes/answer.routes');
+app.use('/answers', answerRoutes);
+
+const subAnswerRoutes = require('./routes/subAnswer.routes');
+app.use('/subAnswers', subAnswerRoutes);
 
 const testRouter = require('./routes/test.routes');
 app.use('/test', testRouter);

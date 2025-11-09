@@ -37,11 +37,13 @@ router.post('/', emailValidator, validate, async (req, res) => {
         res.status(200).json({
             message: 'Login successful',
             nrp: findUser.nrp,
+            role: findUser.role,
             accessToken: accessToken,
             refreshToken: refreshToken
         });
     }
     catch (error) {
+        console.error('Error during login:', error);
         res.status(500).json({ error: 'Error logging in user' });
     }
 });
