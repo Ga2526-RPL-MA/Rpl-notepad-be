@@ -21,6 +21,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
         const issue = await prisma.issue.findUnique({
             where: { id: parseInt(id) },
             select: { //Issue Table
+                class: { //Class Table
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 id: true,
                 userName: true,
                 content: true,
@@ -32,10 +38,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
                         content: true,
                         answeredAt: true,
                         subAnswers: { //Sub-Answers Table
-                            id: true,
-                            userName: true,
-                            content: true,
-                            answeredAt: true,
+                            select: {
+                                id: true,
+                                userName: true,
+                                content: true,
+                                answeredAt: true,
+                            }
                         }
                     }
                 }
@@ -69,7 +77,7 @@ router.post('/', authenticateToken, async (req, res) => {
             }
         });
         res.status(201).json(newIssue);
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error creating issue' });
