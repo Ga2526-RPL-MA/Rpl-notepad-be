@@ -7,7 +7,7 @@ const app = express();
 app.use(helmet());
 
 const corsConfig = {
-  origin: ['https://localhost:3000'],
+  origin: ['https://localhost:3000', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credetials: true
 };
