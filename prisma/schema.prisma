@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -38,6 +37,7 @@ model Class {
   issue     Issue[]
   tasks     Task[]
   students  UserClasses[]
+  notes     Note[]
 }
 
 model UserClasses {
@@ -51,15 +51,15 @@ model UserClasses {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String?
   dueDate     DateTime?
-  status      String   @default("ongoing")
+  status      String    @default("ongoing")
   userId      Int
   classId     Int
-  class       Class    @relation(fields: [classId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  class       Class     @relation(fields: [classId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 }
 
 model Issue {
@@ -78,8 +78,8 @@ model Answer {
   content    String
   answeredAt DateTime    @default(now())
   issueId    Int
-  issue      Issue       @relation(fields: [issueId], references: [id])
   subAnswers SubAnswer[]
+  issue      Issue       @relation(fields: [issueId], references: [id])
 }
 
 model SubAnswer {
@@ -89,4 +89,20 @@ model SubAnswer {
   answeredAt DateTime @default(now())
   answerId   Int
   answer     Answer   @relation(fields: [answerId], references: [id])
+}
+
+model Note {
+  id        Int        @id @default(autoincrement())
+  content   String?
+  week      Int
+  classId   Int
+  class     Class      @relation(fields: [classId], references: [id])
+  noteFiles NoteFile[]
+}
+
+model NoteFile {
+  id       Int     @id @default(autoincrement())
+  filePath String?
+  noteId   Int
+  note     Note    @relation(fields: [noteId], references: [id])
 }
