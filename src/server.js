@@ -16,6 +16,8 @@ app.use(cors(corsConfig));
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/uploads', express.static('uploads'));
+
 app.use(express.json());
 
 app.get('/', (req, res) => {

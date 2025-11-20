@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../middleware/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware');
+const { url } = require('inspector');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
@@ -11,6 +12,38 @@ router.get('/', authenticateToken, async (req, res) => {
     catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error fetching notes data' });
+    }
+});
+
+router.get('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const notes = await prisma.note.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                class: true,
+                noteFiles: true
+            }
+        });
+
+        const host = `${req.protocol}://${req.get("host")}`;
+
+        const modifiedFile = notes.noteFiles.map(file => ({
+            id: file.id,
+            url: `${host}/${file.filePath}`
+        }));
+
+        res.json({
+            class: notes.class.name,
+            content: notes.content,
+            week: notes.week,
+            files: modifiedFile
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error fetching notes and upload data' });
     }
 });
 
