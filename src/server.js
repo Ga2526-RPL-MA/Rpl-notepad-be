@@ -52,6 +52,9 @@ app.use('/answers', answerRoutes);
 const subAnswerRoutes = require('./routes/subAnswer.routes');
 app.use('/subAnswers', subAnswerRoutes);
 
+const noteRoutes = require('./routes/note.routes');
+app.use('/notes', noteRoutes);
+
 const testRouter = require('./routes/test.routes');
 app.use('/test', testRouter);
 
