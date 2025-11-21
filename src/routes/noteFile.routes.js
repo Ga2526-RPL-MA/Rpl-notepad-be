@@ -3,8 +3,7 @@ const router = express.Router();
 const prisma = require('../middleware/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadConfig');
-const fs = require('fs');
-const path = require('path');
+const supabase = require('../middleware/supabaseClient');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
@@ -30,10 +29,32 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
             return res.status(400).json({ error: 'Note ID is required' });
         }
 
+        const uploadedFilePaths = [];
+
+        for (const file of files) {
+            const ext = file.originalname.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+            const uploadPath = `notes/${noteId}/${fileName}`;
+
+            const { error } = await supabase.storage
+                .from('notes')
+                .upload(uploadPath, file.buffer, {
+                    contentType: file.mimetype
+                });
+
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ error: 'Error uploading file to supabase' });
+            }
+
+            uploadedFilePaths.push(uploadPath);
+        }
+
         const savedfiles = await prisma.noteFile.createMany({
-            data: files.map((file) => ({
+            data: uploadedFilePaths.map((file) => ({
                 noteId: Number(noteId),
-                filePath: file.path
+                filePath: file
             }))
         });
         res.status(201).json({
@@ -63,14 +84,27 @@ router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => 
             return res.status(404).json({ error: 'File not found' });
         }
 
-        if (existingFile.filePath && fs.existsSync(existingFile.filePath)) {
-            fs.unlinkSync(existingFile.filePath);
+        await supabase.storage.from('notes').remove([existingFile.filePath]);
+
+        const ext = file.originalname.split('.').pop();
+        const newFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+        const newUploadPath = `notes/${noteId}/${newFileName}`;
+
+        const { error } = await supabase.storage
+            .from('notes')
+            .upload(newUploadPath, newFile.buffer, {
+                contentType: newFile.mimetype
+            });
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Error uploading updated file to supabase' });
         }
 
         const updatedFile = await prisma.noteFile.update({
             where: { id: parseInt(id) },
-            data: { 
-                filePath: newFile.path
+            data: {
+                filePath: newUploadPath
             }
         });
         res.json({
@@ -95,9 +129,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'File not found' });
         }
 
-        if (existingFile.filePath && fs.existsSync(existingFile.filePath)) {
-            fs.unlinkSync(existingFile.filePath);
-        }
+        await supabase.storage.from('notes').remove([existingFile.filePath]);
 
         await prisma.noteFile.delete({
             where: { id: parseInt(id) }

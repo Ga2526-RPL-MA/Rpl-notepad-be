@@ -2,25 +2,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const { noteId } = req.body;
-        const uploadDir = path.join(__dirname, "../uploads/notes", noteId.toString());
-
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
-        cb(null, uploadDir);
-    },
-
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname) || ".pdf";
-        const filename = `${Date.now()}${ext}`;
-
-        cb(null, filename);
-    }
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
     const allowed = [
