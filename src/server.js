@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const path = require('path');
 const port = 5000;
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(cors(corsConfig));
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use(express.json());
 
