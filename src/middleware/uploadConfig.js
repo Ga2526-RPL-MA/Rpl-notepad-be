@@ -4,29 +4,44 @@ const path = require('path');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const { id } = req.params;
-        const uploadDir = path.join("uploads", "notes", id);
+        const { noteId } = req.body;
+        const uploadDir = path.join(__dirname, "../uploads/notes", noteId.toString());
 
-        fs.mkdir(uploadDir, { recursive: true });
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
 
         cb(null, uploadDir);
     },
 
     filename: (req, file, cb) => {
-        const timestamp = Date.now();
+        const ext = path.extname(file.originalname) || ".pdf";
+        const filename = `${Date.now()}${ext}`;
 
-        cb(null, `${timestamp}.pdf`);
+        cb(null, filename);
     }
 });
 
+const fileFilter = (req, file, cb) => {
+    const allowed = [
+        'application/pdf',
+        'application/octet-stream'
+    ]
+
+    if (!allowed.includes(file.mimetype)) {
+        return cb(new Error('Only PDF files are allowed'), false);
+    }
+    cb(null, true);
+};
+
+const limits = {
+    fileSize: 10 * 1024 * 1024 // 10 MB
+};
+
 const upload = multer({
     storage,
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype !== "application/pdf") {
-            return cb(new Error("Only PDF allowed"));
-        }
-        cb(null, true);
-    }
+    fileFilter,
+    limits
 });
 
 module.exports = upload;

@@ -32,7 +32,7 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
 
         const savedfiles = await prisma.noteFile.createMany({
             data: files.map((file) => ({
-                noteId,
+                noteId: Number(noteId),
                 filePath: file.path
             }))
         });
