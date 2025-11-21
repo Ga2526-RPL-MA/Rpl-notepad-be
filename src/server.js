@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const path = require('path');
 const port = 5000;
 const app = express();
 
@@ -9,14 +10,14 @@ app.use(helmet());
 const corsConfig = {
   origin: ['https://localhost:3000', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credential: true
+  credentials: true
 };
 
 app.use(cors(corsConfig));
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use(express.json());
 
@@ -62,6 +63,16 @@ app.use('/noteFiles', noteFileRoutes);
 
 const testRouter = require('./routes/test.routes');
 app.use('/test', testRouter);
+
+app.use((req, res) => {
+  res.status(404).json({ status: 'error', message: 'Route not found' });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  const status = err.status || 500;
+  res.status(status).json({ status: 'error', message: err.message || 'Internal Server Error' });
+});
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
