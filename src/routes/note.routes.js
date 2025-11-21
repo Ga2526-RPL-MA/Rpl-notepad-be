@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../middleware/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware');
+const supabase = require('../middleware/supabaseClient');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
@@ -14,37 +15,41 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// router.get('/:id', authenticateToken, async (req, res) => {
-//     const { id } = req.params;
+router.get('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
 
-//     try {
-//         const notes = await prisma.note.findUnique({
-//             where: { id: parseInt(id) },
-//             include: {
-//                 class: true,
-//                 noteFiles: true
-//             }
-//         });
+    try {
+        const notes = await prisma.note.findUnique({
+            where: { id: parseInt(id) },
+            include: {
+                class: true,
+                noteFiles: true
+            }
+        });
 
-//         const host = `${req.protocol}://${req.get("host")}`;
+        const modifiedFile = notes.noteFiles.map(file => {
+            const { data } = supabase.storage
+                .from('notes')
+                .getPublicUrl(file.filePath);
 
-//         const modifiedFile = notes.noteFiles.map(file => ({
-//             id: file.id,
-//             url: `${host}/${file.filePath}`
-//         }));
+            return {
+                id: file.id,
+                url: data.publicUrl
+            }
+        });
 
-//         res.json({
-//             class: notes.class.name,
-//             content: notes.content,
-//             week: notes.week,
-//             files: modifiedFile
-//         });
-//     }
-//     catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Error fetching notes and upload data' });
-//     }
-// });
+        res.json({
+            class: notes.class.name,
+            content: notes.content,
+            week: notes.week,
+            files: modifiedFile
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error fetching notes and upload data' });
+    }
+});
 
 router.post('/', authenticateToken, async (req, res) => {
     const { content, week, classId } = req.body;
