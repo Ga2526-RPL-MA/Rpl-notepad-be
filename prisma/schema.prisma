@@ -37,7 +37,7 @@ model Class {
   issue     Issue[]
   tasks     Task[]
   students  UserClasses[]
-  notes     Note[]
+  weeks     Week[]
 }
 
 model UserClasses {
@@ -91,12 +91,20 @@ model SubAnswer {
   answer     Answer   @relation(fields: [answerId], references: [id])
 }
 
+model Week {
+  id      Int    @id @default(autoincrement())
+  week    Int
+  classId Int
+  class   Class  @relation(fields: [classId], references: [id])
+  notes   Note[]
+}
+
 model Note {
   id        Int        @id @default(autoincrement())
+  userName  String?
   content   String?
-  week      Int
-  classId   Int
-  class     Class      @relation(fields: [classId], references: [id])
+  weekId    Int
+  week      Week       @relation(fields: [weekId], references: [id])
   noteFiles NoteFile[]
 }
 
