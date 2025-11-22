@@ -14,6 +14,35 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const classWeek = await prisma.week.findUnique({
+            where: { id: parseInt(id) },
+            select: {
+                class: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                week: true,
+                notes: {
+                    select: {
+                        userName: true
+                    }
+                }
+            }
+        });
+        res.json(classWeek);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error fetching week data' });
+    }
+});
+
 router.post('/', authenticateToken, async (req, res) => {
     const { week, classId } = req.body;
 
