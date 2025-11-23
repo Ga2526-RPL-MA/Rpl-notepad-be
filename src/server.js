@@ -17,8 +17,6 @@ app.use(cors(corsConfig));
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -54,6 +52,9 @@ app.use('/answers', answerRoutes);
 
 const subAnswerRoutes = require('./routes/subAnswer.routes');
 app.use('/subAnswers', subAnswerRoutes);
+
+const weekRouters = require('./routes/week.routes');
+app.use('/weeks', weekRouters);
 
 const noteRoutes = require('./routes/note.routes');
 app.use('/notes', noteRoutes);

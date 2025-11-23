@@ -27,13 +27,13 @@ router.post('/', authenticateToken, async (req, res) => {
             }
         });
 
-        const newNotes = Array.from({ length: 16 }, (_, i) => ({
+        const newWeek = Array.from({ length: 16 }, (_, i) => ({
             week: i + 1,
             classId: newClass.id
         }));
 
-        await prisma.note.createMany({
-            data: newNotes
+        await prisma.week.createMany({
+            data: newWeek
         });
         
         res.status(201).json(newClass);
