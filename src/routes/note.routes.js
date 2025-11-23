@@ -23,6 +23,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
             where: { id: parseInt(id) },
             include: {
                 class: true,
+                week: true,
                 noteFiles: true
             }
         });
@@ -41,7 +42,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         res.json({
             class: notes.class.name,
             content: notes.content,
-            week: notes.week,
+            week: notes.week.week,
             files: modifiedFile
         });
     }
@@ -52,29 +53,25 @@ router.get('/:id', authenticateToken, async (req, res) => {
 });
 
 router.post('/', authenticateToken, async (req, res) => {
-    const { content, week, classId } = req.body;
+    const { content, weekId } = req.body;
 
     try {
-        const findClass = await prisma.class.findUnique({
-            where: { id: classId }
+        const findWeek = await prisma.week.findUnique({
+            where: { id: weekId }
         });
-        if (!findClass) {
-            return res.status(404).json({ error: 'Class not found' });
+        if (!findWeek) {
+            return res.status(404).json({ error: 'Week not found' });
         }
 
-        if (!week) {
-            return res.status(400).json({ error: 'Week is required' });
-        }
-
-        if (!classId) {
-            return res.status(400).json({ error: 'Class ID is required' });
+        if (!weekId) {
+            return res.status(400).json({ error: 'Week ID is required' });
         }
 
         const newNote = await prisma.note.create({
             data: {
+                userName: req.user.name,
                 content,
-                week,
-                classId
+                weekId
             }
         });
         res.status(201).json(newNote)
