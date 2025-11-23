@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const prisma = require('../middleware/prismaClient');
+const prisma = require('../config/prismaClient');
 const authenticateToken = require('../middleware/authMiddleware');
-const supabase = require('../middleware/supabaseClient');
+const supabase = require('../config/supabaseClient');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {

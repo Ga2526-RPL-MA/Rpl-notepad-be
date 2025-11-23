@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const prisma = require('../middleware/prismaClient');
+const prisma = require('../config/prismaClient');
 const emailValidator = require('../validator/getUserValidator');
 const { generateAccessToken, generateRefreshToken, generateRefreshTokenExpiry } = require('../utils/tokenUtils');
 const validate = require('../middleware/validate');
