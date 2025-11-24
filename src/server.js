@@ -35,6 +35,9 @@ app.use('/refresh', refreshTokenRouter);
 const logoutRouter = require('./auth/logout');
 app.use('/logout', logoutRouter);
 
+const userRouter = require('./routes/user.routes');
+app.use('/users', userRouter);
+
 const classRouter = require('./routes/class.routes');
 app.use('/class', classRouter);
 
