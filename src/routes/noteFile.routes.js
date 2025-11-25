@@ -21,6 +21,13 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
     const { noteId } = req.body;
 
     try {
+        const findNote = await prisma.note.findUnique({
+            where: { id: parseInt(noteId) }
+        });
+        if (!findNote) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
         if (!files || files.length === 0) {
             return res.status(400).json({ error: 'Need minimal 1 file uploaded' });
         }
@@ -32,8 +39,7 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
         const uploadedFilePaths = [];
 
         for (const file of files) {
-            const ext = file.originalname.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+            const fileName = file.originalname;
 
             const uploadPath = `notes/${noteId}/${fileName}`;
 
