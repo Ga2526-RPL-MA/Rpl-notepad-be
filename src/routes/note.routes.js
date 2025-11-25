@@ -22,8 +22,11 @@ router.get('/:id', authenticateToken, async (req, res) => {
         const notes = await prisma.note.findUnique({
             where: { id: parseInt(id) },
             include: {
-                class: true,
-                week: true,
+                week: {
+                    include: {
+                        class: true
+                    }
+                },
                 noteFiles: true
             }
         });
@@ -40,7 +43,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         });
 
         res.json({
-            class: notes.class.name,
+            class: notes.week.class.name,
             content: notes.content,
             week: notes.week.week,
             files: modifiedFile
