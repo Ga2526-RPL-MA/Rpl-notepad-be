@@ -93,8 +93,7 @@ router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => 
 
         await supabase.storage.from('notes').remove([existingFile.filePath]);
 
-        const ext = newFile.originalname.split('.').pop();
-        const newFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+        const newFileName = newFile.originalname;
         const newUploadPath = `notes/${noteId}/${newFileName}`;
 
         const { error } = await supabase.storage
