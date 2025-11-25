@@ -111,6 +111,31 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         await prisma.note.delete({
             where: { id: parseInt(id) }
         });
+
+        const { data, error } = await supabase.storage
+            .from('notes')
+            .list(`notes/${id}/`)
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Error reading folder' });
+        }
+
+        if (!data || data.length === 0) {
+            return res.json({ error: 'No files in storage' });
+        }
+
+        const paths = data.map(files => `notes/${id}/${files.name}`);
+
+        const { deleteError } = await supabase.storage
+            .from('notes')
+            .remove(paths);
+
+        if (deleteError) {
+            console.error(deleteError);
+            return res.status(500).json({ error: 'Error deleting note' });
+        }
+
         res.status(204).end()
     }
     catch (error) {
