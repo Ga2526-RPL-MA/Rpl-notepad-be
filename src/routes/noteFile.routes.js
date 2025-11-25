@@ -140,7 +140,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         await prisma.noteFile.delete({
             where: { id: parseInt(id) }
         });
-        res.json({ message: 'File deleted successfully' });
+        res.status(204).end()
     }
     catch (error) {
         console.error(error);

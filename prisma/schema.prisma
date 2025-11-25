@@ -44,8 +44,8 @@ model UserClasses {
   id      Int   @id @default(autoincrement())
   userId  Int
   classId Int
-  class   Class @relation(fields: [classId], references: [id])
-  user    User  @relation(fields: [userId], references: [id])
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, classId])
 }
@@ -58,8 +58,8 @@ model Task {
   status      String    @default("ongoing")
   userId      Int
   classId     Int
-  class       Class     @relation(fields: [classId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
+  class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Issue {
@@ -69,7 +69,7 @@ model Issue {
   reportedAt DateTime @default(now())
   classId    Int
   answers    Answer[]
-  class      Class    @relation(fields: [classId], references: [id])
+  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 model Answer {
@@ -79,7 +79,7 @@ model Answer {
   answeredAt DateTime    @default(now())
   issueId    Int
   subAnswers SubAnswer[]
-  issue      Issue       @relation(fields: [issueId], references: [id])
+  issue      Issue       @relation(fields: [issueId], references: [id], onDelete: Cascade)
 }
 
 model SubAnswer {
@@ -88,14 +88,14 @@ model SubAnswer {
   content    String
   answeredAt DateTime @default(now())
   answerId   Int
-  answer     Answer   @relation(fields: [answerId], references: [id])
+  answer     Answer   @relation(fields: [answerId], references: [id], onDelete: Cascade)
 }
 
 model Week {
   id      Int    @id @default(autoincrement())
   week    Int
   classId Int
-  class   Class  @relation(fields: [classId], references: [id])
+  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
   notes   Note[]
 }
 
@@ -104,7 +104,7 @@ model Note {
   userName  String?
   content   String?
   weekId    Int
-  week      Week       @relation(fields: [weekId], references: [id])
+  week      Week       @relation(fields: [weekId], references: [id], onDelete: Cascade)
   noteFiles NoteFile[]
 }
 
@@ -112,5 +112,5 @@ model NoteFile {
   id       Int     @id @default(autoincrement())
   filePath String?
   noteId   Int
-  note     Note    @relation(fields: [noteId], references: [id])
+  note     Note    @relation(fields: [noteId], references: [id], onDelete: Cascade)
 }
