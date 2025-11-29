@@ -76,7 +76,6 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
 
 router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => {
     const { id } = req.params;
-    const { noteId } = req.body;
     const newFile = req.file;
 
     try {
@@ -85,16 +84,23 @@ router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => 
         }
 
         const existingFile = await prisma.noteFile.findUnique({
-            where: { id: parseInt(id) }
+            where: { id: parseInt(id) },
+            include: {
+                note: true
+            }
         });
         if (!existingFile) {
             return res.status(404).json({ error: 'File not found' });
         }
 
+        if (existingFile.note.userName !== req.user.name) {
+            return res.status(403).json({ error: 'Error editing others file' });
+        }
+
         await supabase.storage.from('notes').remove([existingFile.filePath]);
 
         const newFileName = newFile.originalname;
-        const newUploadPath = `notes/${noteId}/${newFileName}`;
+        const newUploadPath = `notes/${existingFile.noteId}/${newFileName}`;
 
         const { error } = await supabase.storage
             .from('notes')

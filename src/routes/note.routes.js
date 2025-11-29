@@ -90,6 +90,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { content } = req.body;
 
     try {
+        const note = await prisma.note.findUnique({
+            where: { id: parseInt(id) }
+        });
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        if (note.userName !== req.user.name) {
+            return res.status(403).json({ error: 'Error editing others note' });
+        }
+
         const updatedNote = await prisma.note.update({
             where: { id: parseInt(id) },
             data: {
