@@ -16,6 +16,38 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const noteFile = await prisma.noteFile.findMany({
+            where: {
+                OR: [
+                    { filePath: { contains: q, mode: 'insensitive' } }
+                ]
+            }
+        });
+
+        const fileLink = noteFile.map(file => {
+            const { data } = supabase.storage
+                .from('notes')
+                .getPublicUrl(file.filePath);
+
+            return {
+                id: file.id,
+                url: data.publicUrl,
+                noteId: file.noteId
+            }
+        });
+
+        res.json(fileLink);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching note file' });
+    }
+});
+
 router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) => {
     const files = req.files;
     const { noteId } = req.body;
