@@ -8,7 +8,19 @@ const supabase = require('../middleware/supabaseClient');
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const noteFile = await prisma.noteFile.findMany();
-        res.json(noteFile);
+
+        const fileLink = noteFile.map(file => {
+            const { data } = supabase.storage
+                .from('notes')
+                .getPublicUrl(file.filePath);
+
+            return {
+                id: file.id,
+                url: data.publicUrl,
+                noteId: file.noteId
+            }
+        });
+        res.json(fileLink);
     }
     catch (error) {
         console.error(error);
