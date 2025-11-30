@@ -14,6 +14,35 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const classes = await prisma.class.findMany({
+            where: {
+                OR: [
+                    { name: { contains: q, mode: 'insensitive' } },
+                    { lecturer: { contains: q, mode: 'insensitive' } },
+                    { timetable: { contains: q, mode: 'insensitive' } },
+                    { room: { contains: q, mode: 'insensitive' } }
+                ]
+            },
+            select: {
+                id: true,
+                name: true,
+                lecturer: true,
+                timetable: true,
+                room: true
+            }
+        });
+        res.json(classes)
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching class' });
+    }
+});
+
 router.post('/', authenticateToken, async (req, res) => {
     const { name, lecturer, timetable, room } = req.body;
 
