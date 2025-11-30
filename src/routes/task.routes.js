@@ -16,6 +16,34 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const tasks = await prisma.task.findMany({
+            where: {
+                userId: req.user.id,
+                OR: [
+                    { title: { contains: q, mode: 'insensitive' } },
+                    { description: { contains: q, mode: 'insensitive' } }
+                ]
+            }, 
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                dueDate: true,
+                status: true
+            }
+        });
+        res.json(tasks);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching task' });
+    }
+});
+
 router.post('/', authenticateToken, async (req, res) => {
     const { title, description, dueDate, classId } = req.body;
 
