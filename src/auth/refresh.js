@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const prisma = require('../middleware/prismaClient');
-const { generateAccessToken } = require('../utils/tokenUtils');
+const { generateAccessToken, generateRefreshTokenExpiry } = require('../utils/tokenUtils');
 
 router.post('/', async (req, res) => {
     const { refreshToken } = req.body;
@@ -36,7 +36,13 @@ router.post('/', async (req, res) => {
 
             const newAccessToken = generateAccessToken(storedToken.user);
 
-            res.status(200).json({ accessToken: newAccessToken });
+            const newExpiry = generateRefreshTokenExpiry();
+            await prisma.refreshToken.update({
+                where: { token: refreshToken },
+                data: { expiresAt: newExpiry }
+            });
+
+            res.status(200).json({ accessToken: newAccessToken, refreshTokenExpiresAt: newExpiry });
         });
     }
     catch (error) {
