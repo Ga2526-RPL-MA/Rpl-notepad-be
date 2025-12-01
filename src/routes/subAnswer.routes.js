@@ -14,6 +14,26 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const subAnswer = await prisma.subAnswer.findMany({
+            where: {
+                OR: [
+                    { userName: { contains: q, mode: 'insensitive' } },
+                    { content: { contains: q, mode: 'insensitive' } }
+                ]
+            }
+        });
+        res.json(subAnswer);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching sub answer' });
+    }
+});
+
 router.post('/', authenticateToken, async (req, res) => {
     const { content, answerId } = req.body;
 

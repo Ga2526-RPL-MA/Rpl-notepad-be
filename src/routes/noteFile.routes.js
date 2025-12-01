@@ -8,11 +8,55 @@ const supabase = require('../middleware/supabaseClient');
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const noteFile = await prisma.noteFile.findMany();
-        res.json(noteFile);
+
+        const fileLink = noteFile.map(file => {
+            const { data } = supabase.storage
+                .from('notes')
+                .getPublicUrl(file.filePath);
+
+            return {
+                id: file.id,
+                url: data.publicUrl,
+                noteId: file.noteId
+            }
+        });
+        res.json(fileLink);
     }
     catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error fetching note file data' });
+    }
+});
+
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const noteFile = await prisma.noteFile.findMany({
+            where: {
+                OR: [
+                    { filePath: { contains: q, mode: 'insensitive' } }
+                ]
+            }
+        });
+
+        const fileLink = noteFile.map(file => {
+            const { data } = supabase.storage
+                .from('notes')
+                .getPublicUrl(file.filePath);
+
+            return {
+                id: file.id,
+                url: data.publicUrl,
+                noteId: file.noteId
+            }
+        });
+
+        res.json(fileLink);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching note file' });
     }
 });
 
@@ -76,7 +120,6 @@ router.post('/', authenticateToken, upload.array("pdfs", 5), async (req, res) =>
 
 router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => {
     const { id } = req.params;
-    const { noteId } = req.body;
     const newFile = req.file;
 
     try {
@@ -85,16 +128,23 @@ router.put('/:id', authenticateToken, upload.single("pdf"), async (req, res) => 
         }
 
         const existingFile = await prisma.noteFile.findUnique({
-            where: { id: parseInt(id) }
+            where: { id: parseInt(id) },
+            include: {
+                note: true
+            }
         });
         if (!existingFile) {
             return res.status(404).json({ error: 'File not found' });
         }
 
+        if (existingFile.note.userName !== req.user.name) {
+            return res.status(403).json({ error: 'Error editing others file' });
+        }
+
         await supabase.storage.from('notes').remove([existingFile.filePath]);
 
         const newFileName = newFile.originalname;
-        const newUploadPath = `notes/${noteId}/${newFileName}`;
+        const newUploadPath = `notes/${existingFile.noteId}/${newFileName}`;
 
         const { error } = await supabase.storage
             .from('notes')

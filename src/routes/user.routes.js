@@ -14,6 +14,34 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                OR: [
+                    { name: { contains: q, mode: 'insensitive' } },
+                    { nrp: { contains: q, mode: 'insensitive' } },
+                    { email: {contains: q, mode: 'insensitive' }  }
+                ]
+            },
+            select: {
+                id: true,
+                name: true,
+                nrp: true,
+                email: true,
+                role: true
+            }
+        });
+        res.json(users);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching users' });
+    }
+});
+
 //Admin edit user
 router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;

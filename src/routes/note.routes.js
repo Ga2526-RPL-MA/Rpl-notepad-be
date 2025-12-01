@@ -15,6 +15,26 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/search', authenticateToken, async (req, res) => {
+    const { q } = req.query;
+
+    try {
+        const notes = await prisma.note.findMany({
+            where: {
+                OR: [
+                    { userName: { contains: q, mode: 'insensitive' } },
+                    { content: { contains: q, mode: 'insensitive' } }
+                ]
+            }
+        });
+        res.json(notes);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error searching note' });
+    }
+});
+
 router.get('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
@@ -90,6 +110,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { content } = req.body;
 
     try {
+        const note = await prisma.note.findUnique({
+            where: { id: parseInt(id) }
+        });
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        if (note.userName !== req.user.name) {
+            return res.status(403).json({ error: 'Error editing others note' });
+        }
+
         const updatedNote = await prisma.note.update({
             where: { id: parseInt(id) },
             data: {
