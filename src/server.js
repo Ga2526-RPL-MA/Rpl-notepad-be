@@ -7,12 +7,7 @@ const app = express();
 
 app.use(helmet());
 
-const corsConfig = {
-  origin: ['https://localhost:3000', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-};
-
+const corsConfig = require('./middleware/corsConfig');
 app.use(cors(corsConfig));
 
 app.use(express.urlencoded({ extended: true }));
