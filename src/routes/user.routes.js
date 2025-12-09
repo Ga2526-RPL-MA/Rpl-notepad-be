@@ -5,7 +5,15 @@ const authenticateToken = require('../middleware/authMiddleware');
 
 router.get('/', authenticateToken, async (req, res) => {
     try {
-        const user = await prisma.user.findMany();
+        const user = await prisma.user.findMany({
+            include: {
+                id: true,
+                name: true,
+                nrp: true,
+                email: true,
+                role: true
+            }
+        });
         res.json(user);
     }
     catch (error) {
