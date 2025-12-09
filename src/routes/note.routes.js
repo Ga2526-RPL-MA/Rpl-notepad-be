@@ -135,6 +135,31 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+router.patch('/removeNote/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const note = await prisma.note.findUnique({
+            where: { id: parseInt(id) }
+        });
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        
+        const removedContent = await prisma.note.update({
+            where: { id: parseInt(id) },
+            data: {
+                content: null
+            }
+        });
+        res.json(removedContent);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error removing note content' });
+    }
+});
+
 router.delete('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
