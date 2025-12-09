@@ -152,12 +152,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-router.delete('/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params;
+router.delete('/:userId/:classId', authenticateToken, async (req, res) => {
+    const { userId, classId } = req.params;
 
     try {
         await prisma.userClasses.delete({
-            where: { id: parseInt(id) }
+            where: {
+                userId_classId: {
+                    userId: parseInt(userId),
+                    classId: parseInt(classId)
+                }
+            }
         });
         res.status(204).end()
     }
