@@ -18,8 +18,8 @@ router.get('/byuser/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const userClasses = await prisma.userClasses.findUnique({
-            where: { id: parseInt(id) },
+        const userClasses = await prisma.userClasses.findMany({
+            where: { userId: parseInt(id) },
             select: {
                 class: {
                     select: {
