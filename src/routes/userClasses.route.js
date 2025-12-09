@@ -66,7 +66,7 @@ router.get('/byclass/:id', authenticateToken, async (req, res) => {
 router.get('/byloggedin', authenticateToken, async (req, res) => {
     try {
         const userClasses = await prisma.userClasses.findMany({
-            where: { id: req.user.id },
+            where: { userId: req.user.id },
             select: {
                 class: {
                     select: {
