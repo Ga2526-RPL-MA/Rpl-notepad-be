@@ -18,8 +18,8 @@ router.get('/byuser/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const userClasses = await prisma.userClasses.findUnique({
-            where: { id: parseInt(id) },
+        const userClasses = await prisma.userClasses.findMany({
+            where: { userId: parseInt(id) },
             select: {
                 class: {
                     select: {
@@ -43,8 +43,8 @@ router.get('/byclass/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        const userClasses = await prisma.userClasses.findUnique({
-            where: { id: parseInt(id) },
+        const userClasses = await prisma.userClasses.findMany({
+            where: { classId: parseInt(id) },
             select: {
                 user: {
                     select: {
@@ -65,7 +65,7 @@ router.get('/byclass/:id', authenticateToken, async (req, res) => {
 
 router.get('/byloggedin', authenticateToken, async (req, res) => {
     try {
-        const userClasses = await prisma.userClasses.findUnique({
+        const userClasses = await prisma.userClasses.findMany({
             where: { id: req.user.id },
             select: {
                 class: {
