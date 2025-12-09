@@ -6,12 +6,12 @@ const authenticateToken = require('../middleware/authMiddleware');
 router.get('/', authenticateToken, async (req, res) => {
     try {
         const user = await prisma.user.findMany({
+            where: { role: 'user' },
             select: {
                 id: true,
                 name: true,
                 nrp: true,
-                email: true,
-                role: true
+                email: true
             }
         });
         res.json(user);
