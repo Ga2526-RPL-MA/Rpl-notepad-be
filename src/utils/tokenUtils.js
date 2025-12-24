@@ -16,22 +16,6 @@ function generateAccessToken(user) {
     );
 };
 
-function generateRefreshToken(userId) {
-    return jwt.sign(
-        { userId: userId },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: '7d' }
-    );
-};
-
-function generateRefreshTokenExpiry() {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-    return expiresAt;
-};
-
 module.exports = {
-    generateAccessToken,
-    generateRefreshToken,
-    generateRefreshTokenExpiry
+    generateAccessToken
 };

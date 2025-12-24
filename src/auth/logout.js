@@ -5,10 +5,6 @@ const authenticateToken = require('../middleware/authMiddleware');
 
 router.post('/', authenticateToken, async (req, res) => {
     try {
-        await prisma.refreshToken.deleteMany({
-            where: { userId: req.user.id }
-        });
-
         res.status(200).json({ message: 'Logout Success' });
     }
     catch (error) {
