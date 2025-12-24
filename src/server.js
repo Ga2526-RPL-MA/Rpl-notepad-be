@@ -24,9 +24,6 @@ app.use('/register', registerRouter);
 const loginRouter = require('./auth/login');
 app.use('/login', loginRouter);
 
-const refreshTokenRouter = require('./auth/refresh');
-app.use('/refresh', refreshTokenRouter);
-
 const logoutRouter = require('./auth/logout');
 app.use('/logout', logoutRouter);
 

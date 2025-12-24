@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const prisma = require('../middleware/prismaClient');
 const emailValidator = require('../validator/getUserValidator');
-const { generateAccessToken, generateRefreshToken, generateRefreshTokenExpiry } = require('../utils/tokenUtils');
+const { generateAccessToken } = require('../utils/tokenUtils');
 const validate = require('../middleware/validate');
 
 router.post('/', emailValidator, validate, async (req, res) => {
@@ -23,23 +23,12 @@ router.post('/', emailValidator, validate, async (req, res) => {
         }
         
         const accessToken = generateAccessToken(findUser);
-        const refreshToken = generateRefreshToken(findUser.id);
-        const refreshTokenExpiry = generateRefreshTokenExpiry();
-
-        await prisma.refreshToken.create({
-            data: {
-                token: refreshToken,
-                userId: findUser.id,
-                expiresAt: refreshTokenExpiry
-            }
-        });
 
         res.status(200).json({
             message: 'Login successful',
             nrp: findUser.nrp,
             role: findUser.role,
             accessToken: accessToken,
-            refreshToken: refreshToken
         });
     }
     catch (error) {
